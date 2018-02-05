@@ -121,8 +121,8 @@ int main(int argc, char **argv) {
 							while (true) {
 								ssize_t _s = read(rsock, buf, sizeof(buf) - 1);
 								if (_s < 0) {
-//									printf("%s\n",strerror(errno));
-									printf("errno: %d\n", errno);
+									printf("%s\n",strerror(errno));
+//									printf("errno: %d\n", errno);
 									if (errno == EAGAIN) {
 										_ev.data.fd = rsock;
 										_ev.events = EPOLLOUT | EPOLLET;
