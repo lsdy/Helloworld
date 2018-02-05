@@ -7,34 +7,27 @@
 //============================================================================
 
 #include <leveldb/db.h>
-#include <boost/random.hpp>
-#include <sys/time.h>
-#include <signal.h>
-#include <pthread.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
+#include <iostream>
 
-//类型是 void (*)(int)，只要符合这个类型的变量其实都是一个玩意
-typedef void (*function_test)(int a);
-
-function_test g_ft;
-
-void set_test_func(function_test ft){
-	g_ft=ft;
-}
-
-//试验发现修改函数返回值和修改参数类型个数都不行，编译不通过
-void real_func(int a){
-	printf("%d\n",a);
-}
+using namespace leveldb;
+using std::string;
+using std::cout;
 
 int main(int argc, char **argv) {
-	set_test_func(real_func);
-	if(g_ft){
-		g_ft(1);
+	DB *db=NULL;
+	Status s;
+	Options options;
+	options.create_if_missing=true;
+	s=DB::Open(options,"TestDB",&db);
+	if(!s.ok()){
+		exit(1);
 	}
+	for(int i=0;i<10000;i++){
+		db->Put(WriteOptions(),std::to_string(i),"dadsad");
+	}
+	string value;
+	db->GetProperty("leveldb.approximate-memory-usage",&value);
+	cout<<value<<"\n";
+	delete db;
 }
 
